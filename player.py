@@ -1,6 +1,7 @@
 class HumanPlayer:
     def __init__(self):
-        return 0
+        self.score = 50
+
 class ComputerPlayer:
     def __init__(self):
-        return 0
+        self.score = 50
