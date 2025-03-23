@@ -34,7 +34,3 @@ class Game:
             return "Dators uzvar!"
         else:
             return "Neizšķirts."
-
-            return "Dators uzvar!"
-        else:
-            return "Neizšķirts."
