@@ -19,8 +19,8 @@ COLOR_WHEEL_DIAMETER = 200
 COMPUTER_MOVE_DELAY = 1000  # ms
 
 # Colors
-BG_COLOR = (0, 0, 0)
-TEXT_COLOR = (255, 255, 255)
+BG_COLOR = [0, 0, 0]
+TEXT_COLOR = [255, 255, 255]
 
 # Game state
 class GameState:
@@ -30,7 +30,15 @@ class GameState:
     GAME = "spēle"
     END = "spēles_beigas"
     SETTINGS = "settings"
+def get_current_color():
+    return BG_COLOR if settings["color_target"] == "bg" else TEXT_COLOR
 
+def set_current_color(color):
+    if settings["color_target"] == "bg":
+        BG_COLOR[0], BG_COLOR[1], BG_COLOR[2] = color
+        settings["bg_image"] = None
+    else:
+        TEXT_COLOR[0], TEXT_COLOR[1], TEXT_COLOR[2] = color
 # Settings
 settings = {
     "no_ads": False,
@@ -65,7 +73,7 @@ pygame.display.set_caption("Spēle: Skaitļu izņemšana")
 clock = pygame.time.Clock()
 font = pygame.font.SysFont(FONT_NAME, FONT_SIZE)
 
-#  Rectangles for buttons and input boxes
+# Rectangles for buttons and input boxes
 rects = {
     "mode_input_box": pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 30, 200, 40),
     "exit_button": pygame.Rect(WIDTH // 2 - 50, HEIGHT // 2 + 100, 100, 40),
@@ -85,7 +93,9 @@ rects = {
     "back_button": pygame.Rect(WIDTH - 150, HEIGHT - 60, 130, 40)
 }
 
-def draw_text(text, x, y, color=TEXT_COLOR):
+def draw_text(text, x, y, color=None):
+    if color is None:
+        color = TEXT_COLOR  # Use the updated TEXT_COLOR by default
     text_surface = font.render(text, True, color)
     screen.blit(text_surface, (x, y))
 
@@ -259,6 +269,8 @@ def handle_end_events(event):
         game_vars["error_message"] = ""
 
 def handle_settings_events(event):
+    global BG_COLOR, TEXT_COLOR
+    
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
         game_vars["mouse_pressed"] = True
         if rects["load_bg_button"].collidepoint(event.pos):
@@ -288,21 +300,22 @@ def handle_settings_events(event):
             
             if distance <= radius:
                 try:
-                    settings["selected_color"] = create_color_wheel(
+                    settings["hover_preview_color"] = create_color_wheel(
                         COLOR_WHEEL_DIAMETER, 
                         settings["brightness"], 
                         settings["saturation"]
                     ).get_at((rel_x, rel_y))[:3]
-                    
-                    if settings["color_target"] == "bg":
-                        BG_COLOR = settings["selected_color"]
-                        settings["bg_image"] = None
-                    else:
-                        TEXT_COLOR = settings["selected_color"]
                 except IndexError:
-                    pass
+                    settings["hover_preview_color"] = None
     
     elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+        if game_vars["mouse_pressed"] and settings["hover_preview_color"]:
+            settings["selected_color"] = settings["hover_preview_color"]
+            if settings["color_target"] == "bg":
+                BG_COLOR = settings["selected_color"]
+                settings["bg_image"] = None
+            else:
+                TEXT_COLOR = settings["selected_color"]
         game_vars["mouse_pressed"] = False
     
     elif event.type == pygame.MOUSEMOTION and game_vars["mouse_pressed"]:
@@ -342,7 +355,7 @@ def draw_mode_screen():
     draw_text("Izvēlies spēles režīmu:", WIDTH // 2 - 140, HEIGHT // 2 - 100)
     draw_text("1 - pret datoru, 2 - pret spēlētāju", WIDTH // 2 - 160, HEIGHT // 2 - 70)
     
-    pygame.draw.rect(screen, (255, 255, 255), rects["mode_input_box"], 2)
+    pygame.draw.rect(screen, TEXT_COLOR, rects["mode_input_box"], 2)
     draw_text(game_vars["mode_input"], rects["mode_input_box"].x + 10, rects["mode_input_box"].y + 10)
     
     pygame.draw.rect(screen, (200, 0, 0), rects["exit_button"])
