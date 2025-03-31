@@ -73,23 +73,34 @@ pygame.display.set_caption("Spēle: Skaitļu izņemšana")
 clock = pygame.time.Clock()
 font = pygame.font.SysFont(FONT_NAME, FONT_SIZE)
 
+# Images for buttons
+robot_image = pygame.image.load("vsRobot.jpg")
+robot_image = pygame.transform.scale(robot_image, (120, 120))
+
+human_image = pygame.image.load("vsHuman.jpg")
+human_image = pygame.transform.scale(human_image, (120, 120))
+
+settings_image = pygame.image.load("settings.png")
+settings_image = pygame.transform.scale(settings_image, (60, 60))
+
 # Rectangles for buttons and input boxes
 rects = {
-    "mode_input_box": pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 30, 200, 40),
-    "exit_button": pygame.Rect(WIDTH // 2 - 50, HEIGHT // 2 + 100, 100, 40),
-    "settings_button": pygame.Rect(WIDTH // 2 - 160, HEIGHT // 2 + 150, 130, 40),
-    "no_ads_button": pygame.Rect(WIDTH // 2 + 30, HEIGHT // 2 + 150, 130, 40),
+    "vsRobot": pygame.Rect(WIDTH // 2 - 160, HEIGHT // 2 - 170, 120, 120),
+    "vsHuman": pygame.Rect(WIDTH // 2 + 20, HEIGHT // 2 - 170, 120, 120),
+    "settings_button": pygame.Rect(WIDTH // 2 - 50, HEIGHT // 2 , 60, 60),
+    "no_ads_button": pygame.Rect(WIDTH // 2 - 65, HEIGHT // 2 + 80, 100, 40),
+    "exit_button": pygame.Rect(WIDTH // 2 - 65, HEIGHT // 2 + 150, 100, 40),
     "input_name1": pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 - 50, 300, 40),
-    "input_name2": pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 + 10, 300, 40),
+    "input_name2": pygame.Rect(WIDTH // 2 - 150, HEIGHT // 2 + 40, 300, 40),
     "input_length": pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 30, 200, 40),
     "input_move": pygame.Rect(WIDTH // 2 - 50, HEIGHT - 100, 100, 40),
     "replay_button": pygame.Rect(WIDTH // 2 - 160, HEIGHT // 2 + 100, 130, 40),
-    "menu_button": pygame.Rect(WIDTH // 2 + 30, HEIGHT // 2 + 100, 130, 40),
-    "color_wheel": pygame.Rect(WIDTH - 220, 80, COLOR_WHEEL_DIAMETER, COLOR_WHEEL_DIAMETER),
+    "menu_button": pygame.Rect(WIDTH // 2 + 30, HEIGHT // 2 + 100, 150, 40),
+    "color_wheel": pygame.Rect(WIDTH // 2 - 300, HEIGHT // 2 - 150, COLOR_WHEEL_DIAMETER, COLOR_WHEEL_DIAMETER),
     "brightness_slider": pygame.Rect(WIDTH - 220 + COLOR_WHEEL_DIAMETER + 20, 80, 20, COLOR_WHEEL_DIAMETER),
-    "saturation_slider": pygame.Rect(WIDTH - 220 - 30, 80, 20, COLOR_WHEEL_DIAMETER),
-    "load_bg_button": pygame.Rect(50, 300, 200, 40),
-    "toggle_color_button": pygame.Rect(270, 300, 200, 40),
+    "saturation_slider": pygame.Rect(WIDTH // 2 + 100, HEIGHT // 2 - 140, 20, COLOR_WHEEL_DIAMETER),
+    "load_bg_button": pygame.Rect(WIDTH // 2 - 350, HEIGHT - 60, 200, 40),
+    "toggle_color_button": pygame.Rect(WIDTH // 2 - 110, HEIGHT - 60, 200, 40),
     "back_button": pygame.Rect(WIDTH - 150, HEIGHT - 60, 130, 40)
 }
 
@@ -134,21 +145,15 @@ def handle_mode_events(event):
             game_vars["error_message"] = ""
         elif rects["no_ads_button"].collidepoint(event.pos):
             settings["no_ads"] = True
-            game_vars["error_message"] = "Funkcija 'Bez reklām' iegādāta!"
-    
-    if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_RETURN:
-            if game_vars["mode_input"] in ["1", "2"]:
-                game_vars["game_mode"] = "pc" if game_vars["mode_input"] == "1" else "pvp"
-                game_vars["phase"] = GameState.NAMES
-                game_vars["error_message"] = ""
-            else:
-                game_vars["error_message"] = "Lūdzu, ievadi 1 vai 2!"
-            game_vars["mode_input"] = ""
-        elif event.key == pygame.K_BACKSPACE:
-            game_vars["mode_input"] = game_vars["mode_input"][:-1]
-        elif event.unicode in ["1", "2"]:
-            game_vars["mode_input"] += event.unicode
+            game_vars["error_message"] = "Funkcija 'Bez reklāmām' iegādāta!"
+        elif rects["vsRobot"].collidepoint(event.pos):
+            game_vars["game_mode"] = "pc"
+            game_vars["phase"] = GameState.NAMES
+            game_vars["error_message"] = ""
+        elif rects["vsHuman"].collidepoint(event.pos):
+            game_vars["game_mode"] = "pvp"
+            game_vars["phase"] = GameState.NAMES
+            game_vars["error_message"] = ""
 
 def handle_names_events(event):
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -352,20 +357,27 @@ def handle_settings_events(event):
                 settings["hover_preview_color"] = None
 
 def draw_mode_screen():
-    draw_text("Izvēlies spēles režīmu:", WIDTH // 2 - 140, HEIGHT // 2 - 100)
-    draw_text("1 - pret datoru, 2 - pret spēlētāju", WIDTH // 2 - 160, HEIGHT // 2 - 70)
-    
-    pygame.draw.rect(screen, TEXT_COLOR, rects["mode_input_box"], 2)
-    draw_text(game_vars["mode_input"], rects["mode_input_box"].x + 10, rects["mode_input_box"].y + 10)
-    
-    pygame.draw.rect(screen, (200, 0, 0), rects["exit_button"])
-    draw_text("Iziet", rects["exit_button"].x + 15, rects["exit_button"].y + 10)
-    
-    pygame.draw.rect(screen, (0, 200, 200), rects["settings_button"])
-    draw_text("Iestatījumi", rects["settings_button"].x + 5, rects["settings_button"].y + 10)
-    
+
+
+    pygame.draw.rect(screen, (0, 200, 200), rects["vsRobot"])
+    draw_text("VS BOT", rects["vsRobot"].x + 25, rects["vsRobot"].y + 130)
+    screen.blit(robot_image, (rects["vsRobot"].x, rects["vsRobot"].y))
+
+    pygame.draw.rect(screen, (0, 200, 200), rects["vsHuman"])
+    draw_text("VS Human", rects["vsHuman"].x + 15, rects["vsRobot"].y + 130)
+    screen.blit(human_image, (rects["vsHuman"].x, rects["vsHuman"].y))
+
+    pygame.draw.rect(screen, (0, 0, 0), rects["settings_button"])
+    screen.blit(settings_image, (rects["settings_button"].x, rects["settings_button"].y))
+
+
+
     pygame.draw.rect(screen, (200, 200, 0), rects["no_ads_button"])
-    draw_text("Bez reklām", rects["no_ads_button"].x + 5, rects["no_ads_button"].y + 10)
+    draw_text("No ADS", rects["no_ads_button"].x + 15, rects["no_ads_button"].y + 10)
+
+    pygame.draw.rect(screen, (200, 0, 0), rects["exit_button"])
+    draw_text("QUIT", rects["exit_button"].x + 25, rects["exit_button"].y + 10)
+
     
     if not settings["no_ads"]:
         pygame.draw.rect(screen, (100, 100, 100), pygame.Rect(0, 0, WIDTH, 50))
@@ -387,7 +399,7 @@ def draw_names_screen():
     draw_text(game_vars["name1"], rects["input_name1"].x + 10, rects["input_name1"].y + 10)
     draw_text(game_vars["name2"], rects["input_name2"].x + 10, rects["input_name2"].y + 10)
     
-    draw_text("Nospied Enter, lai turpinātu", WIDTH // 2 - 150, HEIGHT // 2 + 60)
+    draw_text("Nospied Enter, lai turpinātu", WIDTH // 2 - 150, HEIGHT // 2 + 100)
     
     if game_vars["error_message"]:
         draw_text(game_vars["error_message"], WIDTH // 2 - 150, HEIGHT // 2 + 100, (255, 0, 0))
@@ -457,7 +469,7 @@ def draw_settings_screen():
     color_wheel = create_color_wheel(COLOR_WHEEL_DIAMETER, settings["brightness"], settings["saturation"])
     
     draw_text("Iestatījumi", WIDTH // 2 - 60, 20)
-    draw_text("Izvēlies krāsu (klikšķini uz ratīta):", WIDTH - 230, 40)
+    draw_text("Izvēlies krāsu (klikšķini uz rata):", WIDTH // 2 - 330, HEIGHT // 2 - 200)
     screen.blit(color_wheel, rects["color_wheel"])
     
     # Draw sliders
@@ -471,16 +483,15 @@ def draw_settings_screen():
     pygame.draw.circle(screen, (255, 255, 255), (rects["saturation_slider"].centerx, saturation_pos), 10)
     pygame.draw.circle(screen, (255, 255, 255), (rects["brightness_slider"].centerx, brightness_pos), 10)
     
-    draw_text(f"Saturation: {settings['saturation']:.2f}", rects["saturation_slider"].left - 120, rects["saturation_slider"].top)
+    draw_text(f"Saturation: {settings['saturation']:.2f}", rects["saturation_slider"].left - 50, rects["saturation_slider"].top - 60)
     draw_text(f"Brightness: {settings['brightness']:.2f}", rects["brightness_slider"].right + 10, rects["brightness_slider"].top)
     
-    draw_text("Pašreiz: " + ("Fons" if settings["color_target"] == "bg" else "Teksts"), 
-              rects["color_wheel"].x, rects["color_wheel"].y - 30)
+
     
     # Preview color
     if settings["hover_preview_color"]:
-        pygame.draw.rect(screen, settings["hover_preview_color"], pygame.Rect(WIDTH - 120, 80, 60, 30))
-        draw_text("Priekšskatījums", WIDTH - 125, 120)
+        pygame.draw.rect(screen, settings["hover_preview_color"], pygame.Rect(WIDTH - 120, 180, 60, 30))
+        draw_text("Priekšskatījums", WIDTH - 165, 100)
     
     pygame.draw.rect(screen, (200, 200, 200), rects["toggle_color_button"])
     draw_text("Mainīt mērķi", rects["toggle_color_button"].x + 10, rects["toggle_color_button"].y + 10, (0, 0, 0))
