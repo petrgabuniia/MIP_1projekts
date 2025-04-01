@@ -33,9 +33,9 @@ def build_game_tree(node, depth_limit):
 
         # Punktu atjaunināšana
         if node.is_comp_turn:
-            new_comp_score, new_human_score = update_score(node.comp_score, node.human_score, move, True)
+            new_comp_score, new_human_score = update_score(node.comp_score, node.human_score, move)
         else:
-            temp_score, temp_opp = update_score(node.human_score, node.comp_score, move, True)
+            temp_score, temp_opp = update_score(node.human_score, node.comp_score, move)
             new_human_score, new_comp_score = temp_score, temp_opp
 
         # Bērnu mezglu izveide 
@@ -106,7 +106,7 @@ class AI:
         root = GameTreeNode(game.sequence.copy(), game.comp_score, game.human_score, game.is_comp_turn, None)
         build_game_tree(root, depth_limit = 30)
         if self.algo_choice == "1":
-            score, move = minimax(root, 3, True)
+            score, move = minimax(root, 30, True)
         else:
-            score, move = alphabeta(root, 3, -float('inf'), float('inf'), True)
+            score, move = alphabeta(root, 30, -float('inf'), float('inf'), True)
         return move if move is not None else 0
