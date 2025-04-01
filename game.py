@@ -22,7 +22,7 @@ class Game:
                 self.comp_score -= 1
             else:
                 self.human_score -= 1
-        self.is_comp_turn = not is_human
+        self.is_comp_turn = is_human
 
     def is_game_over(self):
         return len(self.sequence) == 0

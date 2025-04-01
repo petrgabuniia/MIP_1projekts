@@ -1,4 +1,5 @@
 import random
+depth_limit = 5
 
 def update_score(player_score, opponent_score, move): # Punktu atjaunināšana
     if move == 1:
@@ -104,9 +105,9 @@ class AI:
         self.algo_choice = algo_choice
     def choose_move(self, game):
         root = GameTreeNode(game.sequence.copy(), game.comp_score, game.human_score, game.is_comp_turn, None)
-        build_game_tree(root, depth_limit = 30)
+        build_game_tree(root, depth_limit)
         if self.algo_choice == "1":
-            score, move = minimax(root, 30, True)
+            score, move = minimax(root, depth_limit, True)
         else:
-            score, move = alphabeta(root, 30, -float('inf'), float('inf'), True)
+            score, move = alphabeta(root, depth_limit, -float('inf'), float('inf'), True)
         return move if move is not None else 0
