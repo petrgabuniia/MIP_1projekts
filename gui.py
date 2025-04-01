@@ -37,13 +37,18 @@ class GameGUI:
         self.sequence_frame = tk.Frame(self.game_frame)
         self.sequence_frame.pack(pady=10)
 
+        tk.Label(self.config_frame, text="Ievadiet pārmeklēšanās dziļuma ierobežojumu:").grid(row=0, column=2, sticky="w")
+        self.depth_entry = tk.Entry(self.config_frame, width=5)
+        self.depth_entry.grid(row=0, column=3, sticky="w")
+        self.depth_entry.insert(0, "5")
+
         self.game = None
         self.ai = None
 
-    # Virknes garuma ievades parbaude
     def start_game(self):
-        try:
+        try: # Ievades validācija
             length = int(self.length_entry.get())
+            depth = int(self.depth_entry.get())
             if not (15 <= length <= 25):
                 messagebox.showerror("Kļūda", "Garumam jābūt no 15 līdz 25.")
                 return

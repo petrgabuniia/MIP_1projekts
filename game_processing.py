@@ -101,13 +101,15 @@ def alphabeta(node, depth, alpha, beta, maximizing):
 
 
 class AI:
-    def __init__(self, algo_choice):
+    def __init__(self, algo_choice, depth_limit=5):
         self.algo_choice = algo_choice
-    def choose_move(self, game):
+        self.depth_limit = depth_limit
+
+    def choose_move(self, game): # Datora gājiena izvēle
         root = GameTreeNode(game.sequence.copy(), game.comp_score, game.human_score, game.is_comp_turn, None)
-        build_game_tree(root, depth_limit)
+        build_game_tree(root, self.depth_limit)
         if self.algo_choice == "1":
-            score, move = minimax(root, depth_limit, True)
+            score, move = minimax(root, self.depth_limit, True)
         else:
-            score, move = alphabeta(root, depth_limit, -float('inf'), float('inf'), True)
+            score, move = alphabeta(root, self.depth_limit, -float('inf'), float('inf'), True)
         return move if move is not None else 0

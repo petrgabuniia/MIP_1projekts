@@ -1,7 +1,7 @@
 from game_processing import generate_sequence
 
 class Game:
-    def __init__(self, length, human_starts=True):
+    def __init__(self, length, human_starts=True): # Spēles inicializācija un sākotnējo parametru iestatīšana
         self.sequence = generate_sequence(length)
         self.human_score = 50
         self.comp_score = 50
@@ -9,7 +9,7 @@ class Game:
 
     def make_move(self, index, is_human):
         number = self.sequence.pop(index)
-        if number == 1:
+        if number == 1: # Punktu maiņa 
             if is_human:
                 self.human_score -= 1
             else:
@@ -22,12 +22,12 @@ class Game:
                 self.comp_score -= 1
             else:
                 self.human_score -= 1
-        self.is_comp_turn = is_human
+        self.is_comp_turn = is_human # Gājienu maiņa
 
     def is_game_over(self):
         return len(self.sequence) == 0
 
-    def get_winner(self):
+    def get_winner(self): # Spēles uzvarētāja noteikšana
         if self.human_score > self.comp_score:
             return "Cilvēks uzvar!"
         elif self.comp_score > self.human_score:
