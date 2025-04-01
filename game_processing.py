@@ -1,5 +1,5 @@
 import random
-depth_limit = 5
+
 
 def update_score(player_score, opponent_score, move): # Punktu atjaunināšana
     if move == 1:
