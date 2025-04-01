@@ -1,4 +1,4 @@
-from utils import generate_sequence
+from game_processing import generate_sequence
 
 class Game:
     def __init__(self, length, human_starts=True):
